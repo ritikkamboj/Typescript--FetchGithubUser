@@ -23,11 +23,67 @@ async function myCustomFetch<T>(url: string, options: RequestInit): Promise<T> {
     );
   }
 
-  const data = response.json();
+  const data = await response.json();
   console.log(data);
   return data;
 }
 
-function fetchUsers(url: string) {
-  myCustomFetch<userData[]>(url, {});
+function showResultUI(user: userData) {
+  const { login, avatar_url, location, url } = user;
+  const template = `<div> <img src="${avatar_url}" alt="${login}"/> <div>  <a href="${url}"> Github </a> </div> <hr/> </div>`;
+
+  // Use a container to convert the string into a DOM element
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = template;
+
+  // Extract the newly created element
+  const element = tempDiv.firstElementChild;
+  console.log(element, "jai");
+  console.log(template, "jai2");
+
+  if (element) {
+    mainContainer.appendChild(element); // Replace `parentElement` with your target DOM element
+  } else {
+    console.error("Failed to create the DOM element.");
+  }
+
+  // mainContainer.insertAdjacentElement(
+  //   "beforeend",
+  //   `<div> <img src=${avatar_url} alt=${login}/> <a href="${url}"> Github </a>  </div>`
+  // );
 }
+
+function fetchUsers(url: string) {
+  myCustomFetch<userData[]>(url, {}).then((userinfo) => {
+    for (const singleUser of userinfo) {
+      showResultUI(singleUser);
+      console.log("login " + singleUser.login);
+    }
+  });
+}
+
+formInput.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = inputValue.value.toLocaleLowerCase();
+
+  let url = `https://api.github.com/users`;
+
+  mainContainer.innerHTML = "";
+  let response1 = await myCustomFetch<userData[]>(url, {});
+
+  let matched = response1.filter((item) => {
+    return item.login.toLocaleLowerCase().includes(name);
+  });
+
+  if (matched.length === 0) {
+    const newElement = document.createElement("div");
+    newElement.textContent = "NO Matched Github ID found ";
+    mainContainer.appendChild(newElement);
+  } else {
+    for (const singleUser of matched) {
+      showResultUI(singleUser);
+      // console.log("login " + singleUser.login);
+    }
+  }
+});
