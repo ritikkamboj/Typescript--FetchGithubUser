@@ -30,7 +30,7 @@ async function myCustomFetch<T>(url: string, options: RequestInit): Promise<T> {
 
 function showResultUI(user: userData) {
   const { login, avatar_url, location, url } = user;
-  const template = `<div> <img src="${avatar_url}" alt="${login}"/> <div>  <a href="${url}"> Github </a> </div> <hr/> </div>`;
+  const template = `<div> <img src="${avatar_url}" alt="${login}"/> <div>   </div> <span>${login} <a href="${url}"> Github </a> </span> <hr/> </div>`;
 
   // Use a container to convert the string into a DOM element
   const tempDiv = document.createElement("div");
